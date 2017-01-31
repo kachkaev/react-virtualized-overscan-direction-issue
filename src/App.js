@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import { Grid, AutoSizer } from 'react-virtualized'; 
-import { Map, TileLayer, Marker } from 'react-leaflet'; 
+import { Map, TileLayer } from 'react-leaflet'; 
+import Vega from 'react-vega';
 
 import 'leaflet/dist/leaflet.css';
 import './App.css';
+
+import barChartSpec from './barChartSpec.js';
 
 const cellWidth = 500;
 const cellHeight = 500;
@@ -11,33 +14,43 @@ const cellHeight = 500;
 const columnCount = 100;
 const rowCount = 100;
 
-const position = [51.505, -0.09];
-const Cell = ({style}) => (
-  <div style={style}>
-    <Map
-      zoomBehaviour={false}
-      zoomControl={false}
-      scrollWheelZoom={false}
-      boxZoom={false}
-      center={position}
-      zoom={13}
+class App extends Component {
+  cellRenderer = ({style, key, columnIndex, rowIndex}) => {
+    if ((columnIndex + rowIndex) % 2) {
+      return (
+        <Map
+          key={key}
+          zoomBehaviour={false}
+          zoomControl={false}
+          scrollWheelZoom={false}
+          boxZoom={false}
+          center={[51.505, -0.09]}
+          zoom={13}
+          style={{
+            ...style,
+            background: 'red',
+            width: cellWidth - 20,
+            height: cellHeight - 20,
+          }}
+        >
+          <TileLayer
+            url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          />
+        </Map>
+      );
+    }
+    return (<Vega
+      key={key}
       style={{
-        background: 'red',
-        position: 'absolute',
+        ...style,
+        background: 'green',
         width: cellWidth - 20,
         height: cellHeight - 20,
       }}
-    >
-      <TileLayer
-        url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-      />
-    </Map>
-  </div>
-);
-
-class App extends Component {
-  cellRenderer = ({style, key, columnIndex, rowIndex}) => <Cell key={key} tileRandomness={key} style={style} />;
+      spec={barChartSpec}
+    />);
+  }
 
   render() {
     return (

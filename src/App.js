@@ -44,7 +44,7 @@ class App extends Component {
       key={key}
       style={{
         ...style,
-        background: 'green',
+        background: 'black',
         width: cellWidth - 20,
         height: cellHeight - 20,
       }}
